@@ -1,0 +1,18 @@
+.flex-container {
+  display: flex;
+}
+.row {
+  border: 2px solid;
+  height: 100px;
+  width: 100px;
+  text-align: center;
+  font-size: 30px;
+}
+body {
+  padding-top: 40px;
+  padding-left: 40%;
+}
+h1 {
+  padding-left: 50px;
+  font-size: 40px;
+}

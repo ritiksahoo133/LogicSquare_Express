@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swap Color</title>
+    <style>
+      .container {
+        display: flex;
+      }
+
+      div.row {
+        border: 2px solid;
+        width: 50%;
+        height: 330px;
+      }
+
+      #d1 {
+        background-color: red;
+      }
+
+      #d2 {
+        background-color: green;
+      }
+
+      #d3 {
+        background-color: blue;
+      }
+      #d4 {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <button id="startButton" onclick="startFunc()">start</button>
+      <button id="stopButton" onclick="stopFunc()" style="display: none">
+        stop
+      </button>
+    </div>
+    <div class="container">
+      <div id="d1" class="row"></div>
+      <div id="d2" class="row"></div>
+    </div>
+    <div class="container">
+      <div id="d3" class="row"></div>
+      <div id="d4" class="row"></div>
+    </div>
+    <script src="/javascripts/swapcolor.js"></script>
+  </body>
+</html>
