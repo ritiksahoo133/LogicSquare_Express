@@ -10,6 +10,7 @@ var loginRouter = require("./routes/login");
 var registerRouter = require("./routes/register");
 var newPageRouter = require("./routes/newPage");
 var gameRouter = require("./routes/game");
+var chatRouter = require("./routes/chat");
 var app = express();
 
 // view engine setup
@@ -28,6 +29,7 @@ app.use("/login", loginRouter);
 app.use("/register", registerRouter);
 app.use("/newPage", newPageRouter);
 app.use("/game", gameRouter);
+app.use("/chat", chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
