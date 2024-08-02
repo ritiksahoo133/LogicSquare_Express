@@ -8,7 +8,9 @@ var router = express.Router();
 // });
 router.get("/setCookie", (req, res) => {
   res.cookie("myCookie", "Hello", { httpOnly: true });
-  res.send("Cookie has been set!");
+  res
+    .status(200)
+    .send(`Cookie has been set! and Requested at: ${req.requestTime}`);
 });
 router.post("/getCookie", (req, res) => {
   const cookieValue = req.cookies.myCookie;
