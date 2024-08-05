@@ -1,49 +1,84 @@
 const express = require("express");
 const router = express.Router();
+const User = require("../models/users");
+const Message = require("../models/message");
+const Conversation = require("../models/conversation");
+const UnreadCount = require("../models/unreadcount");
 
-const users = {
-  "alice@gmail.com": {
-    name: "Alice Smith",
-    password: "securePassword123",
-    date: "2024-07-30",
-  },
-  "bob@gmail.com": {
-    name: "Bob Johnson",
-    password: "anotherSecurePassword456",
-    date: "2024-07-29",
-  },
-  "charlie@gmail.com": {
-    name: "Charlie Brown",
-    password: "yetAnotherSecurePassword789",
-    date: "2024-07-28",
-  },
+const createConversation = async (from, to) => {
+  let conversation = await Conversation.findOne({
+    _participants: { $all: [from, to] },
+  });
+
+  if (!conversation) {
+    conversation = new Conversation({
+      _participants: [from, to],
+    });
+  }
+  await conversation.save();
+  return conversation;
 };
 
-router.get("/", (req, res) => {
-  res.render("chat");
-});
-
-router.get("/setUsers", (req, res) => {
-  res.cookie("user", JSON.stringify(users), { httpOnly: true });
-  res.send("user data is set in cookie");
-});
-router.post("/getUser", (req, res) => {
-  const inputemail = req.body.email;
-  const password = req.body.password;
-
-  console.log(inputemail);
-  console.log(password);
-
-  const users = JSON.parse(req.cookies.user);
-  console.log(typeof users);
+router.post("/sendmessage", async (req, res) => {
   try {
-    if (users[email]) {
-      res.send(`${email} is present`);
-    } else {
-      res.status(404).send("user not found");
-    }
+    const { _from, _to, text } = req.body;
+    const messageData = {
+      _from: _from,
+      _to: _to,
+      text: text,
+      date: new Date(),
+      status: "unseen",
+    };
+
+    // check user exist or not
+    const fromUser = await User.findOne({ _id: _to });
+    const toUser = await User.findOne({ _id: _from });
+    if (fromUser === null || toUser === null)
+      return res.status(404).json({ message: "user not exists", error: true });
+
+    const conversation = await createConversation(_from, _to);
+
+    const response = await Message.create(messageData);
+
+    fromUser.lastMessageTime = messageData.date;
+    await fromUser.save();
+
+    //update Conversation
+    conversation.lastMessageDate = response.date;
+    conversation.lastMessageText = response.text;
+    await conversation.save();
+
+    //update or create unreadCount
+    const unreadcount = await UnreadCount.findOneAndUpdate(
+      {
+        _conversation: conversation._id,
+        _user: _to,
+      },
+      { $inc: { count: 1 } },
+      { upsert: true, new: true }
+    );
+
+    return res
+      .status(200)
+      .json({ response, conversation, unreadcount, error: false });
   } catch (error) {
-    res.send(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/getmessage/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const response = await Message.find({ _from: userId });
+    if (response.length === 0)
+      return res
+        .status(404)
+        .json({ message: "message not found", error: true });
+
+    return res.status(200).json({ response, error: false });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

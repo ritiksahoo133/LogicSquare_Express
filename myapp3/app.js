@@ -34,7 +34,7 @@ app.use("/login", loginRouter);
 app.use("/register", registerRouter);
 app.use("/newPage", newPageRouter);
 app.use("/game", gameRouter);
-app.use("/chat", chatRouter);
+app.use("/message", chatRouter);
 app.use("/response", downloadFile);
 
 // catch 404 and forward to error handler
