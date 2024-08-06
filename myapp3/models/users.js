@@ -12,10 +12,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     password: { type: String, required: true, trim: true },
-    lastMessageTime: {
-      type: Date,
-      default: null,
-    },
     lastLoggedInDate: { type: Date, default: Date.now() },
   },
   { timestamps: true }
