@@ -22,14 +22,6 @@ const createConversation = async (from, to) => {
 router.post("/sendmessage", async (req, res) => {
   try {
     const { _from, _to, text } = req.body;
-    const messageData = {
-      _from: _from,
-      _to: _to,
-      text: text,
-      date: new Date(),
-      status: "unseen",
-    };
-
     // check user exist or not
     const fromUser = await User.findOne({ _id: _to });
     const toUser = await User.findOne({ _id: _from });
@@ -37,6 +29,14 @@ router.post("/sendmessage", async (req, res) => {
       return res.status(404).json({ message: "user not exists", error: true });
 
     const conversation = await createConversation(_from, _to);
+    const messageData = {
+      _from: _from,
+      _to: _to,
+      text: text,
+      date: new Date(),
+      status: "unseen",
+      _conversation: conversation._id,
+    };
 
     const response = await Message.create(messageData);
 
@@ -52,15 +52,17 @@ router.post("/sendmessage", async (req, res) => {
     const unreadcount = await UnreadCount.findOneAndUpdate(
       {
         _conversation: conversation._id,
-        _user: _to,
+        _user: response._to,
       },
       { $inc: { count: 1 } },
-      { upsert: true, new: true }
+      { upsert: true }
     );
 
-    return res
-      .status(200)
-      .json({ response, conversation, unreadcount, error: false });
+    return res.status(200).json({
+      response,
+      conversation,
+      error: false,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -68,9 +70,9 @@ router.post("/sendmessage", async (req, res) => {
 
 router.get("/getmessage/:id", async (req, res) => {
   try {
-    const userId = req.params.id;
+    const conversationId = req.params.id;
+    const response = await Message.find({ _conversation: conversationId });
 
-    const response = await Message.find({ _from: userId });
     if (response.length === 0)
       return res
         .status(404)
@@ -79,6 +81,21 @@ router.get("/getmessage/:id", async (req, res) => {
     return res.status(200).json({ response, error: false });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+router.get("/getindividualmessage", async (req, res) => {
+  try {
+    const { _from, _to } = req.body;
+    const response = await Message.find({ _from: _from, _to: _to });
+    console.log(response);
+
+    if (response.length === 0)
+      return res
+        .status(404)
+        .json({ message: "message not found", error: true });
+    return res.status(200).json({ response, error: false });
+  } catch (error) {
+    return res.status(404).json({ Error: error.message, error: true });
   }
 });
 
