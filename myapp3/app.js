@@ -15,6 +15,7 @@ var gameRouter = require("./routes/game");
 var chatRouter = require("./routes/chat");
 var middleWire = require("./middleware/next");
 var downloadFile = require("./routes/response");
+var conversationRouter = require("./routes/conversation");
 var app = express();
 
 // view engine setup
@@ -36,6 +37,7 @@ app.use("/newPage", newPageRouter);
 app.use("/game", gameRouter);
 app.use("/message", chatRouter);
 app.use("/response", downloadFile);
+app.use("/conversation", conversationRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
