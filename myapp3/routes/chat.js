@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require("../models/users");
 const Message = require("../models/message");
 const Conversation = require("../models/conversation");
-const UnreadCount = require("../models/unreadcount");
 
 const createConversation = async (from, to) => {
   let conversation = await Conversation.findOne({
@@ -36,27 +35,28 @@ router.post("/sendmessage", async (req, res) => {
       date: new Date(),
       status: "unseen",
       _conversation: conversation._id,
+      isread: false,
     };
 
     const response = await Message.create(messageData);
-
-    fromUser.lastMessageTime = messageData.date;
-    await fromUser.save();
-
-    //update Conversation
+    console.log(conversation._sentBy);
+    //update Conversation count
     conversation.lastMessageDate = response.date;
     conversation.lastMessageText = response.text;
-    await conversation.save();
 
-    //update or create unreadCount
-    const unreadcount = await UnreadCount.findOneAndUpdate(
-      {
-        _conversation: conversation._id,
-        _user: response._to,
-      },
-      { $inc: { count: 1 } },
-      { upsert: true }
-    );
+    //check if message is send by receiver
+    if (String(conversation._sentBy) === String(response._to)) {
+      conversation.unreadcount = 0;
+      const message = await Message.updateMany(
+        { _from: _to, _to: _from },
+        { $set: { isread: true } }
+      );
+      console.log(message);
+    }
+    conversation._sentBy = _from;
+    conversation.unreadcount += 1;
+
+    await conversation.save();
 
     return res.status(200).json({
       response,
@@ -71,32 +71,61 @@ router.post("/sendmessage", async (req, res) => {
 router.get("/getmessage/:id", async (req, res) => {
   try {
     const conversationId = req.params.id;
-    const response = await Message.find({ _conversation: conversationId });
+    const { userId } = req.body;
 
-    if (response.length === 0)
-      return res
-        .status(404)
-        .json({ message: "message not found", error: true });
-
-    return res.status(200).json({ response, error: false });
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+    });
+    if (String(conversation._sentBy) !== String(userId)) {
+      await Message.updateMany(
+        {
+          _to: userId,
+          _conversation: conversationId,
+          isread: false,
+        },
+        { $set: { isread: true } }
+      );
+      conversation.unreadcount = 0;
+      conversation.save();
+    }
+    const message = await Message.find({ _conversation: conversationId });
+    return res.status(200).json({ message, conversation, error: false });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-router.get("/getindividualmessage", async (req, res) => {
-  try {
-    const { _from, _to } = req.body;
-    const response = await Message.find({ _from: _from, _to: _to });
-    console.log(response);
 
-    if (response.length === 0)
-      return res
-        .status(404)
-        .json({ message: "message not found", error: true });
-    return res.status(200).json({ response, error: false });
+router.delete("/:id", async (req, res) => {
+  try {
+    const messageId = req.params.id;
+    const { _from, _conversation } = req.body;
+
+    const message = await Message.findOneAndDelete({
+      _id: messageId,
+      _from: _from,
+    });
+    if (message === null)
+      return res.status(404).json({ Error: "message not found", error: true });
+
+    const conversation = await Conversation.findOne({
+      _id: _conversation,
+    });
+    console.log(conversation);
+
+    if (
+      String(conversation._sentBy) === String(_from) &&
+      conversation.unreadcount > 0
+    ) {
+      console.log("Hello-----");
+
+      conversation.unreadcount -= 1;
+      await conversation.save();
+    }
+    return res.status(200).json({ message, conversation, error: false });
   } catch (error) {
-    return res.status(404).json({ Error: error.message, error: true });
+    return res.status(500).json({ Error: error.message });
   }
 });
 
+router.put("/:id", async (req, res) => {});
 module.exports = router;
