@@ -10,6 +10,11 @@ const conversationSchema = new mongoose.Schema({
   ],
   lastMessageDate: { type: Date },
   lastMessageText: { type: String },
+  _sentBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  unreadcount: { type: Number, default: 0, required: true },
 });
 
 conversationSchema.pre("save", function (next) {

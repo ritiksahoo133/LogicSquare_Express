@@ -19,12 +19,7 @@ const messageSchema = new mongoose.Schema({
 
   date: { type: Date, required: true },
 
-  status: {
-    type: String,
-    enum: ["seen", "unseen"],
-    default: "unseen",
-    required: true,
-  },
+  isread: { type: Boolean, required: true, default: false },
 });
 
 const Message = mongoose.model("Message", messageSchema);

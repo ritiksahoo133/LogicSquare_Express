@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true, trim: true },
     lastLoggedInDate: { type: Date, default: Date.now() },
+    backgroundColor: { type: String, default: "#ffffff" },
+    imageUrl: { type: String },
   },
   { timestamps: true }
 );
