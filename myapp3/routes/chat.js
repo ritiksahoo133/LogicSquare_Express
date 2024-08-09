@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/users");
 const Message = require("../models/message");
 const Conversation = require("../models/conversation");
+const authJwtMiddleware = require("../middleware/authmiddlewire");
 
 const createConversation = async (from, to) => {
   let conversation = await Conversation.findOne({
@@ -18,22 +19,24 @@ const createConversation = async (from, to) => {
   return conversation;
 };
 
-router.post("/sendmessage", async (req, res) => {
+router.post("/sendmessage", authJwtMiddleware, async (req, res) => {
+  const userId = req.user._id;
+  const user = await User.findOne({ _id: userId });
+  if (user === null)
+    return res.status(400).json({ error: true, reason: "user not found" });
   try {
-    const { _from, _to, text } = req.body;
+    const { _to, text } = req.body;
     // check user exist or not
-    const fromUser = await User.findOne({ _id: _to });
-    const toUser = await User.findOne({ _id: _from });
-    if (fromUser === null || toUser === null)
+    const toUser = await User.findOne({ _id: _to });
+    if (toUser === null)
       return res.status(404).json({ message: "user not exists", error: true });
 
-    const conversation = await createConversation(_from, _to);
+    const conversation = await createConversation(userId, _to);
     const messageData = {
-      _from: _from,
+      _from: userId,
       _to: _to,
       text: text,
       date: new Date(),
-      status: "unseen",
       _conversation: conversation._id,
       isread: false,
     };
@@ -48,12 +51,12 @@ router.post("/sendmessage", async (req, res) => {
     if (String(conversation._sentBy) === String(response._to)) {
       conversation.unreadcount = 0;
       const message = await Message.updateMany(
-        { _from: _to, _to: _from },
+        { _from: _to, _to: userId },
         { $set: { isread: true } }
       );
       console.log(message);
     }
-    conversation._sentBy = _from;
+    conversation._sentBy = userId;
     conversation.unreadcount += 1;
 
     await conversation.save();
@@ -68,10 +71,10 @@ router.post("/sendmessage", async (req, res) => {
   }
 });
 
-router.get("/getmessage/:id", async (req, res) => {
+router.get("/getmessage", authJwtMiddleware, async (req, res) => {
   try {
-    const conversationId = req.params.id;
-    const { userId } = req.body;
+    const { conversationId } = req.body;
+    const userId = req.user._id;
 
     const conversation = await Conversation.findOne({
       _id: conversationId,
@@ -116,8 +119,6 @@ router.delete("/:id", async (req, res) => {
       String(conversation._sentBy) === String(_from) &&
       conversation.unreadcount > 0
     ) {
-      console.log("Hello-----");
-
       conversation.unreadcount -= 1;
       await conversation.save();
     }
