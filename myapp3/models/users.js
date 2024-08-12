@@ -1,19 +1,32 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { validate } = require("./message");
 const saltRounds = 10;
 
 const userSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true, trim: true },
+    username: {
+      type: String,
+      // Basic custom validation
+      validate: {
+        validator: function (value) {
+          return value.length >= 3;
+        },
+        message: (props) => "Username must be at least 3 character long",
+      },
+    },
 
     email: {
       type: String,
-      required: true,
-      lowercase: true,
       unique: true,
-      trim: true,
+      validate: {
+        validator: function (value) {
+          return /\S+@\S+\.\S+/.test(value);
+        },
+        message: (props) => "Email address is not valid",
+      },
     },
-    password: { type: String, trim: true },
+    password: { type: String },
     lastLoggedInDate: { type: Date, default: null },
     backgroundColor: { type: String, default: "#ffffff" },
     imageUrl: { type: String },
@@ -21,9 +34,26 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-//hash & save user's password
+//validate
+userSchema.pre("validate", function (next) {
+  const user = this;
+
+  if (this.username) user.username = this.username.trim();
+
+  if (this.email) this.email = this.email.trim().toLowerCase();
+
+  if (this.password.length < 6)
+    this.invalidate("password", "Password must be at least 6 characters");
+
+  next();
+});
+
+// Pre hook
 userSchema.pre("save", async function (next) {
   const user = this;
+  console.log(this.isNew);
+  console.log(this.isModified("password"));
+
   if (this.isModified("password") || this.isNew) {
     try {
       user.password = await bcrypt.hash(user.password, 10);
