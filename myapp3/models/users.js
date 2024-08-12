@@ -12,19 +12,28 @@ const userSchema = new mongoose.Schema(
         validator: function (value) {
           return value.length >= 3;
         },
-        message: (props) => "Username must be at least 3 character long",
+        message: "Username must be at least 3 character long",
       },
     },
 
     email: {
       type: String,
       unique: true,
-      validate: {
-        validator: function (value) {
-          return /\S+@\S+\.\S+/.test(value);
+      validate: [
+        {
+          validator: function (value) {
+            return /\S+@\S+\.\S+/.test(value);
+          },
+          message: "Email address is not valid",
         },
-        message: (props) => "Email address is not valid",
-      },
+        {
+          validator: async function (value) {
+            const user = await mongoose.models.User.findOne({ email: value });
+            return !user;
+          },
+          message: "Email already exists",
+        },
+      ],
     },
     password: { type: String },
     lastLoggedInDate: { type: Date, default: null },

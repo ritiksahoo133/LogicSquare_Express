@@ -4,18 +4,17 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const db = require("./db");
-// const User = require("./models/users");
+require("dotenv").config();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-var loginRouter = require("./routes/login");
 var registerRouter = require("./routes/register");
 var newPageRouter = require("./routes/newPage");
 var gameRouter = require("./routes/game");
 var chatRouter = require("./routes/chat");
 var middleWire = require("./middleware/next");
-var downloadFile = require("./routes/response");
 var conversationRouter = require("./routes/conversation");
+var loginRouter = require("./routes/auth/login");
 var app = express();
 
 // view engine setup
@@ -36,8 +35,8 @@ app.use("/register", registerRouter);
 app.use("/newPage", newPageRouter);
 app.use("/game", gameRouter);
 app.use("/message", chatRouter);
-app.use("/response", downloadFile);
 app.use("/conversation", conversationRouter);
+app.use(`/api/v${process.env.API_VERSION}`, loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

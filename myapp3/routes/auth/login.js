@@ -15,7 +15,10 @@ router.post("/login", async (req, res) => {
         reason: "email and password field are mandatory",
       });
 
-    const user = await User.findOne({ email: email });
+    const checkValid = new User({ email: email, password: password });
+    await checkValid.validate();
+
+    const user = await User.findOne({ email: checkValid.email });
 
     if (user === null) throw new Error("Invalid username or password");
 
@@ -23,7 +26,8 @@ router.post("/login", async (req, res) => {
     await user.comparePassword(password);
 
     user.lastLoggedInDate = new Date();
-    user.save();
+    await user.validate();
+    await user.save();
 
     const payload = {
       _id: user._id,
