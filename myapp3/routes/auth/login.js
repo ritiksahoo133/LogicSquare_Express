@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../../models/users");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 router.post("/login", async (req, res) => {
@@ -14,10 +15,12 @@ router.post("/login", async (req, res) => {
         reason: "email and password field are mandatory",
       });
 
-    const user = await User.findOne({ email: email, password: password });
+    const user = await User.findOne({ email: email });
 
     if (user === null) throw new Error("Invalid username or password");
-    if (user.password !== password) throw new Error("password is incorrect");
+
+    //check password
+    await user.comparePassword(password);
 
     user.lastLoggedInDate = new Date();
     user.save();
