@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "gendoc": "apidoc -i routes/ -o public/docs"
   },
   "dependencies": {
     "apidoc": "^1.2.0",

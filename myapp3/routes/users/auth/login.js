@@ -6,6 +6,12 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 module.exports = {
+  /**
+   *
+   * @param {post} /login UserLogin
+   * @param {*} res
+   * @returns
+   */
   async post(req, res) {
     try {
       const { email, password } = req.body;
