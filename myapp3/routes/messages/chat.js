@@ -4,6 +4,7 @@ const User = require("../../models/users");
 const Message = require("../../models/message");
 const Conversation = require("../../models/conversation");
 const authJwtMiddleware = require("../../middleware/authmiddlewire");
+const { options } = require(".");
 
 const createConversation = async (from, to) => {
   let conversation = await Conversation.findOne({
@@ -78,8 +79,6 @@ module.exports = {
     try {
       const { conversationId } = req.body;
       const userId = req.user._id;
-      console.log("userId--->", userId);
-
       const conversation = await Conversation.findOne({
         _id: conversationId,
       });
@@ -96,12 +95,12 @@ module.exports = {
         conversation.save();
       }
       const message = await Message.find({ _conversation: conversationId });
+
       return res.status(200).json({ message, conversation, error: false });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
-
   // delete message
   async deletemessage(req, res) {
     try {
@@ -133,5 +132,16 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ Error: error.message });
     }
+  },
+
+  async getConversation(req, res) {
+    const conversationId = req.params.id;
+    const { text } = req.body;
+    const response = await Message.find({
+      _conversation: conversationId,
+      text: { $regex: `${text}`, $options: "i" },
+    });
+
+    return res.status(200).json({ message: response });
   },
 };
