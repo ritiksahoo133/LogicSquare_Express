@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../../models/users");
 const Message = require("../../models/message");
 const Conversation = require("../../models/conversation");
+const Location = require("../../models/location");
 const authJwtMiddleware = require("../../middleware/authmiddlewire");
 const { options } = require(".");
 
@@ -134,14 +135,61 @@ module.exports = {
     }
   },
 
+  //search text
   async getConversation(req, res) {
     const conversationId = req.params.id;
     const { text } = req.body;
+
     const response = await Message.find({
       _conversation: conversationId,
       text: { $regex: `${text}`, $options: "i" },
     });
 
     return res.status(200).json({ message: response });
+  },
+
+  //not contain gmail
+  async notcontaingmail(req, res) {
+    const response = await User.find({
+      username: { $regex: /^r/, $options: "i" },
+    });
+
+    return res.status(200).json(response);
+  },
+
+  async addlocation(req, res) {
+    const { name, type, coordinates } = req.body;
+    try {
+      const newLocation = new Location({
+        name,
+        location: {
+          type,
+          coordinates,
+        },
+      });
+
+      await newLocation.save();
+      return res.status(200).json(newLocation);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+
+  async near(req, res) {
+    const { coordinates } = req.body;
+    try {
+      const response = await Location.find({
+        location: {
+          $near: {
+            $geometry: { type: "Point", coordinates: coordinates },
+
+            $maxDistance: 15000,
+          },
+        },
+      });
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
   },
 };
