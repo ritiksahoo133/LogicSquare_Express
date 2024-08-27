@@ -123,16 +123,3 @@ UserSchema.set("toObject", { virtuals: true })
 
 module.exports = mongoose.model("User", UserSchema)
 
-
-// {
-//   "_id": {
-//     "$oid": "5c7777c2d49a8b5c6b96d46d"
-//   },
-//   "username": "wparedes",
-//   "firstName": "Wilson",
-//   "lastName": "Paredes",
-//   "password": "ec8063bdb584245663a47161bd9469c5d7ddff6959e2024d2f82161e4a0f3c7e",
-//   "access": "dashboard|orders|orderGeneral|priority|shopSchedule|shopBoard|finances",
-//   "landingPage": "dashboard",
-//   "role": "admin"
-// }
