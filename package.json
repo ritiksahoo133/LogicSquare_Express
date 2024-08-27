@@ -38,6 +38,7 @@
     "mongodb-memory-server": "^8.4.1",
     "mongoose": "^6.2.6",
     "morgan": "~1.9.1",
+    "onesignal-node": "^3.4.0",
     "randomstring": "^1.2.2"
   },
   "eslintIgnore": [

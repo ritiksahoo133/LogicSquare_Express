@@ -17,10 +17,14 @@ router.post("/forgotpassword", forgotpassword.startWorkflow); // UNAUTHENTICATED
 router.post("/resetpassword", forgotpassword.resetPassword); // UNAUTHENTICATED; AJAX
 router.get("/gmaillogin/:token?", users.gmailLogin);
 router.post("/facebooklogin", users.facebookLogin);
+router.get("/demo", users.pushnotification);
+router.post("/sendnotification", users.sendnotification);
+router.get("/getmessage", users.getnotification);
+
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
-router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
+// router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
 
 router.get("/user/:id", users.get);
 module.exports = router;

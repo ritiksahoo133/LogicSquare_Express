@@ -2,6 +2,7 @@ const User = require("../../models/user");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
+
 module.exports = {
   /**
     *
@@ -169,5 +170,64 @@ module.exports = {
       Hourmin: hour_min,
       MultipleFormat: multipleFormat,
     });
+  },
+  async pushnotification(req, res) {
+    return res.render("onesignal");
+  },
+
+  async sendnotification(req, res) {
+    const ONE_SIGNAL_APP_ID = "e2df4e0e-b251-4616-bf0a-a55063ea8434";
+    const ONE_SIGNAL_API_KEY =
+      "YTNlMzViZGUtNmY5Yi00ODllLTg3NzAtMDIzYWRiZjE3OTRh";
+    const { title, message, targetUserId } = req.body;
+    console.log("Helllo---------------->");
+
+    const notification = {
+      app_id: ONE_SIGNAL_APP_ID,
+      include_player_ids: [targetUserId], // Specify the target user
+      headings: { en: title },
+      contents: { en: message },
+      // included_segments: ["Subscribed Users"],
+      // target_channel: "push",
+    };
+    try {
+      const response = await axios.post(
+        "https://onesignal.com/api/v1/notifications",
+        notification,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${ONE_SIGNAL_API_KEY}`,
+          },
+        }
+      );
+      res.status(200).json(response.data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async getnotification(req, res) {
+    const { notificationId } = req.body;
+    console.log("Fetching notification details...");
+
+    const ONE_SIGNAL_API_KEY =
+      "YTNlMzViZGUtNmY5Yi00ODllLTg3NzAtMDIzYWRiZjE3OTRh";
+
+    try {
+      const response = await axios.get(
+        `https://onesignal.com/api/v1/notifications/${notificationId}`,
+        {
+          headers: {
+            Authorization: `Basic ${ONE_SIGNAL_API_KEY}`,
+            "Content-Type": "application/json", // Added for completeness
+          },
+        }
+      );
+      res.status(200).json(response.data);
+    } catch (error) {
+      console.error("Error fetching notification details:", error); // Log the error
+      res.status(500).json({ error: error.message }); // Send error message in response
+    }
   },
 };
