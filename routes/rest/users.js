@@ -52,7 +52,7 @@ module.exports = {
     }
   },
 
-  async userinfo(req, res) {
+  async gmailLogin(req, res) {
     const { token } = req.params;
     if (token === undefined) throw new Error("Missing token");
     try {
