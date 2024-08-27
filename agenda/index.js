@@ -1,7 +1,12 @@
-const Agenda = require("agenda")
+const Agenda = require("agenda");
 
-const agenda = new Agenda({ db: { address: process.env.MONGODB_CONNECTION_STRING, collection: "agendaJobs" } })
+const agenda = new Agenda({
+  db: {
+    address: process.env.MONGODB_CONNECTION_STRING,
+    collection: "agendaJobs",
+  },
+});
 
-require("./agenda_jobs")(agenda)
+require("./agenda_jobs")(agenda);
 
-module.exports = agenda
+module.exports = agenda;

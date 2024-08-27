@@ -10,7 +10,7 @@ module.exports = {
     * @apiPermission Public
     *
     *
-    * @apiParam  {String} email
+    * @apiParam  {String} email jcvhfv
     * @apiParam  {String} phone
     * @apiParam  {Object} name
     * @apiParam  {String} password
