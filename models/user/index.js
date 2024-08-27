@@ -20,23 +20,6 @@ const UserSchema = new mongoose.Schema({
 
   lastName: String,
 
-  access: {
-    type: [String],
-    enum: ["dashboard", "orders", "orderGeneral", "priority", "shopSchedule", "shopBoard", "finances", "keywords", "products", "galleryAdmin"]
-  },
-
-  landingPage: {
-    type: String,
-    enum: ["dashboard", "shopSchedule"],
-    default: "shopSchedule"
-  },
-  
-  landingPage: {
-    type: String,
-    enum: ["shop", "admin"],
-    default: "admin"
-  },
-
   email: {
     type: String,
     lowercase: true,
