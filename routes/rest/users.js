@@ -179,16 +179,14 @@ module.exports = {
     const ONE_SIGNAL_APP_ID = "e2df4e0e-b251-4616-bf0a-a55063ea8434";
     const ONE_SIGNAL_API_KEY =
       "YTNlMzViZGUtNmY5Yi00ODllLTg3NzAtMDIzYWRiZjE3OTRh";
-    const { title, message, targetUserId } = req.body;
+    const { title, message, subscriptionId } = req.body;
     console.log("Helllo---------------->");
 
     const notification = {
-      app_id: ONE_SIGNAL_APP_ID,
-      include_player_ids: [targetUserId], // Specify the target user
+      app_id: process.env.ONESIGNAL_APPID,
+      include_player_ids: [subscriptionId],
       headings: { en: title },
       contents: { en: message },
-      // included_segments: ["Subscribed Users"],
-      // target_channel: "push",
     };
     try {
       const response = await axios.post(
@@ -197,10 +195,12 @@ module.exports = {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${ONE_SIGNAL_API_KEY}`,
+            Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
           },
         }
       );
+      console.log("Response------>", response);
+
       res.status(200).json(response.data);
     } catch (error) {
       res.status(500).json({ error: error.message });
