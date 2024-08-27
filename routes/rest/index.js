@@ -19,7 +19,9 @@ router.get("/gmaillogin/:token?", users.gmailLogin);
 router.post("/facebooklogin", users.facebookLogin);
 router.get("/demo", users.pushnotification);
 router.post("/sendnotification", users.sendnotification);
-router.get("/getmessage", users.getnotification);
+router.get("/viewnotification", users.viewnotification);
+router.get("/viewnotifications", users.viewnotifications);
+router.post("/sendemail", users.sendemail);
 
 //moment.js
 router.get("/datedemo", users.datedemo);

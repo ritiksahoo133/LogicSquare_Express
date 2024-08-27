@@ -2,6 +2,17 @@ const User = require("../../models/user");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.SMTP_AUTH_USER,
+    pass: process.env.SMTP_AUTH_PASSWORD,
+  },
+});
 
 module.exports = {
   /**
@@ -176,11 +187,7 @@ module.exports = {
   },
 
   async sendnotification(req, res) {
-    const ONE_SIGNAL_APP_ID = "e2df4e0e-b251-4616-bf0a-a55063ea8434";
-    const ONE_SIGNAL_API_KEY =
-      "YTNlMzViZGUtNmY5Yi00ODllLTg3NzAtMDIzYWRiZjE3OTRh";
     const { title, message, subscriptionId } = req.body;
-    console.log("Helllo---------------->");
 
     const notification = {
       app_id: process.env.ONESIGNAL_APPID,
@@ -201,33 +208,72 @@ module.exports = {
       );
       console.log("Response------>", response);
 
-      res.status(200).json(response.data);
+      return res.status(200).json(response.data);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  async viewnotification(req, res) {
+    const { notificationId } = req.body;
+    try {
+      const response = await axios.get(
+        `https://api.onesignal.com/notifications/${notificationId}?app_id=${process.env.ONESIGNAL_APPID}`,
+        {
+          headers: {
+            Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return res.status(200).json({
+        Headings: response.data.headings,
+        Contents: response.data.contents,
+      });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  async getnotification(req, res) {
-    const { notificationId } = req.body;
-    console.log("Fetching notification details...");
-
-    const ONE_SIGNAL_API_KEY =
-      "YTNlMzViZGUtNmY5Yi00ODllLTg3NzAtMDIzYWRiZjE3OTRh";
-
+  async viewnotifications(req, res) {
+    // const { notificationId } = req.body;
     try {
       const response = await axios.get(
-        `https://onesignal.com/api/v1/notifications/${notificationId}`,
+        `https://api.onesignal.com/notifications?app_id=${process.env.ONESIGNAL_APPID}`,
         {
           headers: {
-            Authorization: `Basic ${ONE_SIGNAL_API_KEY}`,
-            "Content-Type": "application/json", // Added for completeness
+            Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+            "Content-Type": "application/json",
           },
         }
       );
-      res.status(200).json(response.data);
+
+      return res.status(200).json({
+        Headings: response.data.headings,
+        Contents: response.data.contents,
+      });
     } catch (error) {
-      console.error("Error fetching notification details:", error); // Log the error
-      res.status(500).json({ error: error.message }); // Send error message in response
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async sendemail(req, res) {
+    const { to, subject, text, html } = req.body;
+
+    try {
+      const info = await transporter.sendMail({
+        from: "User postmaster@sandbox655d57864498463fa77c9637b15786e4.mailgun.org",
+        to,
+        subject,
+        text,
+        html,
+      });
+      console.log("Info:", info);
+
+      return res.status(200).json(info.messageId);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
   },
 };
