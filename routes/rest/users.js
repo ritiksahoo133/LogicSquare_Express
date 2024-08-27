@@ -1,6 +1,7 @@
 const User = require("../../models/user");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 module.exports = {
   /**
     *
@@ -83,5 +84,90 @@ module.exports = {
     } catch (error) {
       return res.status(500).json(error);
     }
+  },
+
+  // Links:`https://graph.facebook.com/me?fields=id,name,email,gender,birthday,first_name&access_token=${token}`
+
+  async facebookLogin(req, res) {
+    const { token } = req.body;
+    if (token === undefined) throw new Error("Missing token");
+    try {
+      const response = await axios.get(
+        `https://graph.facebook.com/me?fields=id,name,email,gender,birthday,first_name&access_token=${token}`
+      );
+      console.log("response---->", response.data);
+
+      const user = await User.findOne({ email: response.data.email });
+      if (user === null) {
+        throw new Error("user not registered, please register first");
+      }
+
+      const payload = {
+        id: user._id,
+        _id: user._id,
+        fullName: user.name.full,
+        email: user.email,
+        phone: user.phone,
+        gender: response.data.gender,
+        birthday: response.data.birthday,
+        first_name: response.data.first_name,
+      };
+
+      const jwttoken = jwt.sign(payload, process.env.SECRET, {
+        expiresIn: 3600 * 24 * 30,
+      });
+      return res.status(200).json({
+        error: false,
+        token: jwttoken,
+        handle: user.email,
+      });
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  },
+
+  async datedemo(req, res) {
+    // format Dates
+    const date = moment().format("MMMM Do YYYY,h:mm:ss a");
+    const day = moment().format("dddd");
+    const date2 = moment().format("MMM Do YY");
+    const Isoformat = moment().format();
+    // relative Time
+    const Ago = moment("2001", "yyyy").fromNow();
+    const endDayFromNow = moment().endOf("day").fromNow();
+    const startDayFromNow = moment().startOf("day").fromNow();
+    const add10days = moment().startOf("hour").fromNow();
+
+    // calendar Time
+    const subtract10DaysFromNow = moment().subtract(10, "days").calendar();
+    const datenow = moment();
+    var day2 = moment("1995-12-25");
+    console.log("date------>", day2);
+
+    return res.status(200).json({
+      Date: date,
+      Day: day,
+      Date2: date2,
+      ISOFORMAT: Isoformat,
+      ago: Ago,
+      startday: startDayFromNow,
+      endday: endDayFromNow,
+      adddays: add10days,
+      subtract10daysfromnow: subtract10DaysFromNow,
+    });
+  },
+  async moment(req, res) {
+    const date = moment("03-04-2024", "DD-MM-YYYY").format("llll");
+    const date2 = moment("2012 July", "YYYY MMM", "en").isValid();
+    const date3 = moment("2010 2 30", "YYYY MM DD").isValid();
+    const hour_min = moment("1234", "hmm").format("HH:mm");
+    const multipleFormat = moment("12-25-1995", ["MM-DD-YYYY", "YYYY-MM-DD"]);
+    return res.status(200).json({
+      Date: date,
+      Date2: date2,
+      Date3: date3,
+      Hourmin: hour_min,
+      MultipleFormat: multipleFormat,
+    });
   },
 };
