@@ -320,27 +320,15 @@ module.exports = {
 
   async sendmsg(req, res) {
     try {
-      const { to, name } = req.body;
-      if (!to || !name) {
-        return res.status(400).send("Missing required field");
-      }
-
-      const info = await email.send({
-        template: "welcome",
-        message: {
-          to,
-          subject: "Test Message",
-          attachments: [
-            {
-              filename: "https://www.facebook.com/",
-              content: "google",
-            },
-          ],
-        },
+      const info = await email("welcome", {
+        to: "ritiksahoo133@gmail.com",
+        subject: "Demo Email",
         locals: {
-          name,
-          email: "ritik@gmail.com",
-          password: "fnkjsk",
+          name: "Ritik",
+          email: "example@gmail.com",
+          password: "password",
+
+          send: true,
         },
       });
       return res.status(200).json(info);

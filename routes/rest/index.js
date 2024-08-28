@@ -26,7 +26,7 @@ router.post("/sendmsg", users.sendmsg);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
-// router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
+router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
 
 router.get("/user/:id", users.get);
 module.exports = router;

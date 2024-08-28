@@ -57,7 +57,7 @@ app.use(`/admin/v${process.env.API_VERSION}`, adminRouter);
 // Agenda
 agenda.on("ready", async () => {
   console.log("Agenda starting -_-");
-  await agenda.start();
+  // await agenda.start();
   console.log("Agenda started ^_^");
   // cron initiator
   // eslint-disable-next-line global-require
