@@ -22,7 +22,7 @@ router.post("/sendnotification", users.sendnotification);
 router.get("/viewnotification", users.viewnotification);
 router.get("/viewnotifications", users.viewnotifications);
 router.post("/sendemail", users.sendemail);
-
+router.post("/sendmsg", users.sendmsg);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);

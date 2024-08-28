@@ -5,18 +5,40 @@ const moment = require("moment");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const path = require("path");
+const email = require("../../lib/mail");
 const Email = require("email-templates");
+const password = require("./auth/password");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: false, // Use `true` for port 465, `false` for all other ports
+  secure: false,
   auth: {
     user: process.env.SMTP_AUTH_USER,
     pass: process.env.SMTP_AUTH_PASSWORD,
   },
 });
 
+// const email = new Email({
+//   message: {
+//     from: process.env.SMTP_AUTH_USER,
+//   },
+//   transport: {
+//     host: process.env.SMTP_HOST,
+//     port: process.env.SMTP_PORT,
+//     secure: true, // use SSL
+//     auth: {
+//       user: process.env.SMTP_AUTH_USER,
+//       pass: process.env.SMTP_AUTH_PASSWORD,
+//     },
+//   },
+//   views: {
+//     root: path.resolve("./emails"),
+//     options: {
+//       extension: "ejs",
+//     },
+//   },
+// });
 module.exports = {
   /**
     *
@@ -285,12 +307,43 @@ module.exports = {
         from: "User <ritikk@logic-square.com>",
         to,
         subject,
-        // text,
+
         html,
       });
       console.log("Info:", info);
 
       return res.status(200).json(info.messageId);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  async sendmsg(req, res) {
+    try {
+      const { to, name } = req.body;
+      if (!to || !name) {
+        return res.status(400).send("Missing required field");
+      }
+
+      const info = await email.send({
+        template: "welcome",
+        message: {
+          to,
+          subject: "Test Message",
+          attachments: [
+            {
+              filename: "https://www.facebook.com/",
+              content: "google",
+            },
+          ],
+        },
+        locals: {
+          name,
+          email: "ritik@gmail.com",
+          password: "fnkjsk",
+        },
+      });
+      return res.status(200).json(info);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
