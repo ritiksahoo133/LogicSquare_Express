@@ -3,6 +3,9 @@ const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const path = require("path");
+const Email = require("email-templates");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -259,14 +262,30 @@ module.exports = {
   },
 
   async sendemail(req, res) {
-    const { to, subject, text, html } = req.body;
+    const { to, subject, userName } = req.body;
 
     try {
+      const templatePath = path.join(
+        "E:",
+        "Ritik",
+        "Ls_Express",
+        "skeleton",
+        "views",
+        "welcomemessage.ejs"
+      );
+      const html = await ejs.renderFile(
+        templatePath,
+        { userName },
+        {
+          async: true,
+        }
+      );
+
       const info = await transporter.sendMail({
-        from: "User postmaster@sandbox655d57864498463fa77c9637b15786e4.mailgun.org",
+        from: "User <ritikk@logic-square.com>",
         to,
         subject,
-        text,
+        // text,
         html,
       });
       console.log("Info:", info);
