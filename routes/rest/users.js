@@ -8,7 +8,9 @@ const path = require("path");
 const email = require("../../lib/mail");
 const Email = require("email-templates");
 const password = require("./auth/password");
-
+const stripe = require("stripe")(
+  "sk_test_51Pt2xx1xyS6eHcGHSrfLdSfyQQESKMatwXTA28TYmUMCXpnI2zjv1auMtdIZSyV771lqArWjZlXzFXE9yt87mbdS00ypiNeR0x"
+);
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
@@ -318,22 +320,64 @@ module.exports = {
     }
   },
 
-  async sendmsg(req, res) {
+  async demoEmail(req, res) {
     try {
       const info = await email("welcome", {
         to: "ritiksahoo133@gmail.com",
         subject: "Demo Email",
+        from: "ritikk@logic-square.com",
         locals: {
           name: "Ritik",
-          email: "example@gmail.com",
+          email: "ritiksahoo133@gmail.com",
           password: "password",
-
-          send: true,
         },
+        send: true,
       });
       return res.status(200).json(info);
     } catch (error) {
       return res.status(500).json({ error: error.message });
+    }
+  },
+
+  async createPrice(req, res) {
+    try {
+      const product = await stripe.products.create({
+        name: "Starter Subscription",
+        description: "100/Month subscription",
+      });
+
+      const price = await stripe.prices.create({
+        unit_amount: 10000,
+        currency: "inr",
+        recurring: {
+          interval: "month",
+        },
+        product: product.id,
+      });
+
+      return res.status(200).json({
+        message: "Success!",
+        productId: product.id,
+        priceId: price.id,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error creating product or price",
+        error: error.message,
+      });
+    }
+  },
+
+  async createCustomer(req, res) {
+    const { username, useremail } = req.body;
+    try {
+      const customer = await stripe.customers.create({
+        name: username,
+        email: useremail,
+      });
+      return res.status(200).json({ customerId: customer.id });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
 };

@@ -10,6 +10,7 @@ const users = require("./users");
 const login = require("./auth");
 const signup = require("./auth/signup");
 const forgotpassword = require("./auth/password");
+const stripe = require("../../lib/stripe");
 
 router.post("/login", login.post); // UNAUTHENTICATED
 router.post("/signup", signup.post); // UNAUTHENTICATED
@@ -22,7 +23,10 @@ router.post("/sendnotification", users.sendnotification);
 router.get("/viewnotification", users.viewnotification);
 router.get("/viewnotifications", users.viewnotifications);
 router.post("/sendemail", users.sendemail);
-router.post("/sendmsg", users.sendmsg);
+router.post("/sendmsg", users.demoEmail);
+router.post("/createprice", users.createPrice);
+router.post("/createcustomer", stripe.createCustomer);
+router.post("/paymentmethod", stripe.createPayment);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
