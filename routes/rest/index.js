@@ -24,9 +24,16 @@ router.get("/viewnotification", users.viewnotification);
 router.get("/viewnotifications", users.viewnotifications);
 router.post("/sendemail", users.sendemail);
 router.post("/sendmsg", users.demoEmail);
-router.post("/createprice", users.createPrice);
+
+// stripe
 router.post("/createcustomer", stripe.createCustomer);
-router.post("/paymentmethod", stripe.createPayment);
+router.get("/retrievecustomer", stripe.retrieveCustomer);
+router.post("/addcard", stripe.cardAdd);
+router.delete("/deletecard", stripe.deleteCard);
+router.put("/updatecard", stripe.updateCard);
+router.post("/createcharge", stripe.createCharge);
+router.post("/paymentintent", stripe.paymentIntent);
+router.post("/removepaymentmethod", stripe.removeCard);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);

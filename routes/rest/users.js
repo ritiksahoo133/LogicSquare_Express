@@ -338,46 +338,4 @@ module.exports = {
       return res.status(500).json({ error: error.message });
     }
   },
-
-  async createPrice(req, res) {
-    try {
-      const product = await stripe.products.create({
-        name: "Starter Subscription",
-        description: "100/Month subscription",
-      });
-
-      const price = await stripe.prices.create({
-        unit_amount: 10000,
-        currency: "inr",
-        recurring: {
-          interval: "month",
-        },
-        product: product.id,
-      });
-
-      return res.status(200).json({
-        message: "Success!",
-        productId: product.id,
-        priceId: price.id,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error creating product or price",
-        error: error.message,
-      });
-    }
-  },
-
-  async createCustomer(req, res) {
-    const { username, useremail } = req.body;
-    try {
-      const customer = await stripe.customers.create({
-        name: username,
-        email: useremail,
-      });
-      return res.status(200).json({ customerId: customer.id });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
 };
