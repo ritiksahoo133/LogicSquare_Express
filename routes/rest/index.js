@@ -33,6 +33,7 @@ router.delete("/deletecard", stripe.deleteCard);
 router.put("/updatecard", stripe.updateCard);
 router.post("/createcharge", stripe.createCharge);
 router.post("/paymentintent", stripe.paymentIntent);
+router.post("/confirmpayment", stripe.confirmpayment);
 router.post("/removepaymentmethod", stripe.removeCard);
 //moment.js
 router.get("/datedemo", users.datedemo);
