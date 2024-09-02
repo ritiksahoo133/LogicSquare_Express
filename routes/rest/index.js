@@ -35,6 +35,15 @@ router.post("/createcharge", stripe.createCharge);
 router.post("/paymentintent", stripe.paymentIntent);
 router.post("/confirmpayment", stripe.confirmpayment);
 router.post("/removepaymentmethod", stripe.removeCard);
+
+//create account
+router.post("/createaccount", stripe.createAccount);
+router.delete("/deleteaccount", stripe.deleteAccount);
+router.post("/accountlink", stripe.accountLinkFunc);
+router.get("/return", stripe.onboardingComplete);
+router.get("/reauth", stripe.reauth);
+router.get("/verifyaccountstatus", stripe.verifyAccountStatus);
+
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
