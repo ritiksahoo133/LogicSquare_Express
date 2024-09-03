@@ -43,7 +43,14 @@ router.post("/accountlink", stripe.accountLinkFunc);
 router.get("/return", stripe.onboardingComplete);
 router.get("/reauth", stripe.reauth);
 router.get("/verifyaccountstatus", stripe.verifyAccountStatus);
-
+router.get("/success", stripe.success);
+router.get("/failure", stripe.cancel);
+router.post("/checkout", stripe.checkout); // checkout
+router.post("/createprice", stripe.createprice);
+router.post("/refund", stripe.refund);
+router.post("/transfer", stripe.transfer);
+router.get("/getbalance", stripe.getConnectedAccountBalance);
+router.post("/payout", stripe.createPayout);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
