@@ -56,6 +56,8 @@ router.delete("/deletecustomer", stripe.deleteCustomer);
 // stripe router
 router.post("/createuser", stripe.createuser);
 router.post("/createseller", stripe.createseller);
+router.post("/verifyconnectedaccount", stripe.verifyConnectedAccount);
+router.post("/createproduct", stripe.createProduct);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);

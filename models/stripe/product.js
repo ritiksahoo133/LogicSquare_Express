@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    seller: {
+    _seller: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Seller",
       required: true,
