@@ -51,6 +51,11 @@ router.post("/refund", stripe.refund);
 router.post("/transfer", stripe.transfer);
 router.get("/getbalance", stripe.getConnectedAccountBalance);
 router.post("/payout", stripe.createPayout);
+router.delete("/deletecustomer", stripe.deleteCustomer);
+
+// stripe router
+router.post("/createuser", stripe.createuser);
+router.post("/createseller", stripe.createseller);
 //moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
