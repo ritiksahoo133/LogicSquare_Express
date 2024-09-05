@@ -65,6 +65,7 @@ router.get("/products", stripe.getproduct);
 router.get("/addcustomer", stripe.addcustomer);
 router.get("/addvendor", stripe.addvendor);
 router.get("/productpage", stripe.productpage);
+router.get("/customerorderdetails/:id", stripe.getTransactionDetails);
 
 // moment.js
 router.get("/datedemo", users.datedemo);
