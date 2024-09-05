@@ -58,7 +58,15 @@ router.post("/createuser", stripe.createuser);
 router.post("/createseller", stripe.createseller);
 router.post("/verifyconnectedaccount", stripe.verifyConnectedAccount);
 router.post("/createproduct", stripe.createProduct);
-//moment.js
+router.post("/createorder", stripe.createOrder);
+router.get("/products", stripe.getproduct);
+
+// stripe ejs page
+router.get("/addcustomer", stripe.addcustomer);
+router.get("/addvendor", stripe.addvendor);
+router.get("/productpage", stripe.productpage);
+
+// moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
 router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
