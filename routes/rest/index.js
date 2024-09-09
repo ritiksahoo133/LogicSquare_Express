@@ -75,6 +75,7 @@ router.get("/customerorderdetails/:id", stripe.getTransactionDetails);
 
 // aws
 router.post("/uploadfile", upload.single("files"), aws.uploadFile);
+router.post("/upload", upload.array("photos", 10), aws.upload);
 
 // moment.js
 router.get("/datedemo", users.datedemo);
