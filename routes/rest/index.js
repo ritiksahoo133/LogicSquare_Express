@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const expressJwt = require("express-jwt");
+const multer = require("multer");
 const checkJwt = expressJwt({
   secret: process.env.SECRET,
   algorithms: ["RS256"],
@@ -11,6 +12,11 @@ const login = require("./auth");
 const signup = require("./auth/signup");
 const forgotpassword = require("./auth/password");
 const stripe = require("../../lib/stripe");
+const aws = require("../../lib/aws");
+
+// multer
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage });
 
 router.post("/login", login.post); // UNAUTHENTICATED
 router.post("/signup", signup.post); // UNAUTHENTICATED
@@ -67,10 +73,13 @@ router.get("/addvendor", stripe.addvendor);
 router.get("/productpage", stripe.productpage);
 router.get("/customerorderdetails/:id", stripe.getTransactionDetails);
 
+// aws
+router.post("/uploadfile", upload.single("files"), aws.uploadFile);
+
 // moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
-router.all("*", checkJwt); // use this auth middleware for ALL subsequent routes
+router.all("*", checkJwt);
 
 router.get("/user/:id", users.get);
 module.exports = router;
