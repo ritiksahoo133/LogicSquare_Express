@@ -6,8 +6,9 @@
     <style>
       body {
         margin: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f7f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background: #f0f2f5;
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -19,21 +20,20 @@
         padding: 1rem;
         flex-grow: 1;
         overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
       }
       #messages > li {
         padding: 0.75rem;
-        border-radius: 10px;
+        border-radius: 12px;
         background: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        max-width: 80%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        max-width: 70%;
+        margin-bottom: 0.5rem;
         align-self: flex-start;
         position: relative;
+        word-wrap: break-word;
       }
       #messages > li:nth-child(even) {
-        background: #e9f5ff;
+        background: #e1f5fe;
         align-self: flex-end;
       }
       #messages > li::before {
@@ -44,23 +44,23 @@
         border-style: solid;
       }
       #messages > li:nth-child(even)::before {
-        right: -15px;
+        right: -10px;
         top: 50%;
-        border-width: 15px 15px 15px 0;
-        border-color: transparent #e9f5ff transparent transparent;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent #e1f5fe transparent transparent;
         transform: translateY(-50%);
       }
       #messages > li:nth-child(odd)::before {
-        left: -15px;
+        left: -10px;
         top: 50%;
-        border-width: 15px 0 15px 15px;
+        border-width: 10px 0 10px 10px;
         border-color: transparent transparent transparent #ffffff;
         transform: translateY(-50%);
       }
 
       #form {
         background: #ffffff;
-        padding: 1rem;
+        padding: 0.5rem;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -68,14 +68,15 @@
         display: flex;
         align-items: center;
         border-top: 1px solid #ddd;
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
+        z-index: 1;
       }
       #input {
-        flex-grow: 1;
         border: 1px solid #ddd;
+        padding: 0.5rem;
+        flex-grow: 1;
         border-radius: 20px;
-        padding: 0.75rem 1rem;
         margin-right: 0.5rem;
         outline: none;
         font-size: 1rem;
@@ -87,7 +88,7 @@
       #form > button {
         background: #007bff;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.5rem 1rem;
         border-radius: 20px;
         color: #fff;
         cursor: pointer;
@@ -101,26 +102,31 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form id="form">
+    <form id="form" action="">
       <input id="input" autocomplete="off" placeholder="Type a message..." />
       <button type="submit">Send</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
-    <!-- <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> -->
     <script>
       const socket = io();
+
       const form = document.getElementById("form");
       const input = document.getElementById("input");
       const messages = document.getElementById("messages");
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const message = input.value.trim();
-        if (message) {
-          socket.emit("chat message", message);
+        if (input.value) {
+          socket.emit("chat message", input.value);
           input.value = "";
-          input.focus();
         }
+      });
+
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
       });
     </script>
   </body>
