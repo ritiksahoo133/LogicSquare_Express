@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { join } = require("node:path");
 
 const User = require("../../models/user");
 
@@ -22,6 +23,10 @@ router.get("/resetpassword/:token", async (req, res) => {
   } catch (error) {
     return res.status(500).send(error.message);
   }
+});
+
+router.get("/", (req, res) => {
+  res.sendFile(join(__dirname, "index.html"));
 });
 
 module.exports = router;

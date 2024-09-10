@@ -40,7 +40,7 @@ module.exports = async (agenda) => {
     subject: "Meeting reminder",
   });
 
-  console.log(job);
+  // console.log(job);
 
   await job.schedule("2 minutes from now", "sendemail").save();
 

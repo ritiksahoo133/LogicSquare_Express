@@ -7,6 +7,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const axios = require("axios");
+const { Server } = require("socket.io");
 require("dotenv").config();
 
 const agenda = require("./agenda");

@@ -13,13 +13,13 @@ module.exports = (agenda) => {
   //   console.log("Hello world");
   // });
   agenda.define("welcomeMessage", () => {
-    console.log(`Sending a welcome message `);
+    // console.log(`Sending a welcome message `);
   });
 
   // send email
   agenda.define("sendemail", async (job) => {
     const { to, subject, body } = job.attrs.data;
-    console.log(`Sending email to ${to} with subject ${subject}`);
+    // console.log(`Sending email to ${to} with subject ${subject}`);
   });
 
   //set isactive to true
@@ -31,7 +31,7 @@ module.exports = (agenda) => {
     response.lastActive = new Date();
     await response.save();
 
-    console.log("set isactive to true");
+    // console.log("set isactive to true");
   });
 
   //set isactive to false
@@ -43,12 +43,12 @@ module.exports = (agenda) => {
       response.isActive = false;
       await response.save();
 
-      console.log("set isactive to false");
+      // console.log("set isactive to false");
     }
   });
 
   agenda.define("demo2", { priority: "high" }, async (job) => {
     const { to } = job.attrs.data;
-    console.log(`Hi ${to}`);
+    // console.log(`Hi ${to}`);
   });
 };
