@@ -10,6 +10,7 @@ var http = require("http");
 const { join } = require("node:path");
 const { Server } = require("socket.io");
 const Message = require("../models/message/index");
+const mongoose = require("mongoose");
 
 /**
  * Get port from environment and store in Express.
@@ -29,15 +30,38 @@ const io = new Server(server);
  * Listen on provided port, on all network interfaces.
  */
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log("a user connected---------->", socket.id);
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
-  socket.on("chat message", (msg) => {
-    console.log("message: ", msg);
-    io.emit("chat message", msg);
+  socket.on("chat message", async (msg) => {
+    try {
+      const message = new Message({ content: msg });
+      result = await message.save();
+    } catch (error) {}
+    io.emit("chat message", msg, result._id.toString());
   });
+
+  if (!socket.recovered) {
+    // If the connection state recovery was not successful
+    try {
+      const serverOffset =
+        socket.handshake.auth.serverOffset || new mongoose.Types.ObjectId(0);
+
+      const messages = await Message.find({
+        _id: { $gt: serverOffset },
+      }).exec();
+
+      messages.forEach((doc) => {
+        socket.emit("chat message", doc.content, doc._id.toString());
+      });
+
+      socket.recovered = true;
+    } catch (e) {
+      console.error(e);
+    }
+  }
 });
 
 server.listen(port, () => {
