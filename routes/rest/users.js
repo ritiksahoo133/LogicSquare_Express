@@ -8,6 +8,7 @@ const path = require("path");
 const email = require("../../lib/mail");
 const Email = require("email-templates");
 const password = require("./auth/password");
+// const twilioFun = require("../../lib/twilio");
 const stripe = require("stripe")(
   "sk_test_51Pt2xx1xyS6eHcGHSrfLdSfyQQESKMatwXTA28TYmUMCXpnI2zjv1auMtdIZSyV771lqArWjZlXzFXE9yt87mbdS00ypiNeR0x"
 );
@@ -92,7 +93,9 @@ module.exports = {
     }
   },
 
-  async gmailLogin(req, res) {
+  // googleLink: `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`
+
+  async googleLogin(req, res) {
     const { token } = req.params;
     if (token === undefined) throw new Error("Missing token");
     try {
@@ -338,4 +341,14 @@ module.exports = {
       return res.status(500).json({ error: error.message });
     }
   },
+
+  // sendsms(req, res) {
+  //   const { from, body, to } = req.body;
+  //   try {
+  //     const response = twilioFun(from, body, to);
+  //     return res.status(200).json(response);
+  //   } catch (error) {
+  //     return res.status(500).json({ error: error.message });
+  //   }
+  // },
 };

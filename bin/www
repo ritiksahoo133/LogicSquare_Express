@@ -32,6 +32,7 @@ const io = new Server(server);
 
 io.on("connection", async (socket) => {
   console.log("a user connected---------->", socket.id);
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
@@ -48,6 +49,7 @@ io.on("connection", async (socket) => {
     try {
       const serverOffset =
         socket.handshake.auth.serverOffset || new mongoose.Types.ObjectId(0);
+      // console.log(socket.handshake.headers);
 
       const messages = await Message.find({
         _id: { $gt: serverOffset },

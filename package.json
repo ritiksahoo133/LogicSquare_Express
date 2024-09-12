@@ -44,13 +44,15 @@
     "mongoose": "^6.2.6",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
+    "ngrok": "^5.0.0-beta.2",
     "nodemailer": "^6.9.14",
     "onesignal-node": "^3.4.0",
     "preview-email": "^3.1.0",
     "pug": "^3.0.3",
     "randomstring": "^1.2.2",
     "socket.io": "^4.7.5",
-    "stripe": "^16.8.0"
+    "stripe": "^16.8.0",
+    "twilio": "^5.3.0"
   },
   "eslintIgnore": [
     "public/",

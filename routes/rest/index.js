@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const expressJwt = require("express-jwt");
 const multer = require("multer");
+const twilio = require("../../lib/twilio");
 const checkJwt = expressJwt({
   secret: process.env.SECRET,
   algorithms: ["RS256"],
@@ -22,7 +23,7 @@ router.post("/login", login.post); // UNAUTHENTICATED
 router.post("/signup", signup.post); // UNAUTHENTICATED
 router.post("/forgotpassword", forgotpassword.startWorkflow); // UNAUTHENTICATED; AJAX
 router.post("/resetpassword", forgotpassword.resetPassword); // UNAUTHENTICATED; AJAX
-router.get("/gmaillogin/:token?", users.gmailLogin);
+router.get("/googlelogin/:token?", users.googleLogin);
 router.post("/facebooklogin", users.facebookLogin);
 router.get("/demo", users.pushnotification);
 router.post("/sendnotification", users.sendnotification);
@@ -76,6 +77,11 @@ router.get("/customerorderdetails/:id", stripe.getTransactionDetails);
 // aws
 router.post("/uploadfile", upload.single("files"), aws.uploadFile);
 router.post("/upload", upload.array("photos", 10), aws.upload);
+
+// sendsms using twilio
+router.post("/sendsms", twilio.sendsms);
+router.get("/fetchmessage/:Sid", twilio.fetchMessage);
+router.get("/listmessage", twilio.getmultipleMessage);
 
 // moment.js
 router.get("/datedemo", users.datedemo);
