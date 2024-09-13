@@ -3,10 +3,10 @@ const router = express.Router();
 const expressJwt = require("express-jwt");
 const multer = require("multer");
 const twilio = require("../../lib/twilio");
-const checkJwt = expressJwt({
-  secret: process.env.SECRET,
-  algorithms: ["RS256"],
-}); // the JWT auth check middleware
+// const checkJwt = expressJwt({
+//   secret: process.env.SECRET,
+//   algorithms: ["RS256"],
+// }); // the JWT auth check middleware
 
 const users = require("./users");
 const login = require("./auth");
@@ -82,11 +82,13 @@ router.post("/upload", upload.array("photos", 10), aws.upload);
 router.post("/sendsms", twilio.sendsms);
 router.get("/fetchmessage/:Sid", twilio.fetchMessage);
 router.get("/listmessage", twilio.getmultipleMessage);
+router.post("/messagefeedback", twilio.createmessagefeedback);
+router.get("/incoming", twilio.incomingMessage);
 
 // moment.js
 router.get("/datedemo", users.datedemo);
 router.get("/date", users.moment);
-router.all("*", checkJwt);
+// router.all("*", checkJwt);
 
 router.get("/user/:id", users.get);
 module.exports = router;

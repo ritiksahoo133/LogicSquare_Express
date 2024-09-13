@@ -236,7 +236,6 @@ module.exports = {
           },
         }
       );
-      console.log("Response------>", response);
 
       return res.status(200).json(response.data);
     } catch (error) {
