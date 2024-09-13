@@ -82,8 +82,6 @@ router.post("/upload", upload.array("photos", 10), aws.upload);
 router.post("/sendsms", twilio.sendsms);
 router.get("/fetchmessage/:Sid", twilio.fetchMessage);
 router.get("/listmessage", twilio.getmultipleMessage);
-router.post("/messagefeedback", twilio.createmessagefeedback);
-router.get("/incoming", twilio.incomingMessage);
 
 // moment.js
 router.get("/datedemo", users.datedemo);
